@@ -30,14 +30,13 @@ const Box = styled.div`
 `;
 
 const evalFunc = function(string) {
-  string =  string.replace("×", "*");
-  string =  string.replace("÷", "/");
+  string =  string.replace(/×/gi, "*"); // 식에 있는 모든 ×를 *로 변환
+  string =  string.replace(/÷/gi, "/"); // 식에 있는 모든 ÷를 /로 변환
   // eslint-disable-next-line no-new-func
   return new Function("return (" + string + ")")();
 };
 
 class Calculator extends React.Component {
-  
   // TODO: history 추가
   state = {
     displayValue: "",
@@ -94,7 +93,6 @@ class Calculator extends React.Component {
         }
       },
       "=": () => {
-        
         if (lastChar !== "" && operatorKeys.includes(lastChar)) {
           displayValue = displayValue.substr(0, displayValue.length - 1);
         } else if (lastChar !== "") {
@@ -107,9 +105,9 @@ class Calculator extends React.Component {
        
       },
       ".": () => {
-        if (lastChar !== "" && !operatorKeys.includes(lastChar)) {
-          this.setState({ displayValue: displayValue + "." });
-         }
+        if (this.state.displayValue.indexOf(".") === -1) { // .이 있는지 확인
+          this.setState({displayValue: this.state.displayValue + "."}); // 없으면 .추가
+        }
       },
       "0": () => {
         if (Number(displayValue) !== 0) {
@@ -129,9 +127,9 @@ class Calculator extends React.Component {
 
   render() {
     // history에 있는 식과 결과 값 추출
-    const hilist = this.state.history.map(id=> { 
+    const hilist = this.state.history.map((id,index)=> { 
     return(
-      <Box> 
+      <Box key={id} > 
         <div>{ id.id }</div>
         <div>{"=" + id.value}</div>
       </Box>
