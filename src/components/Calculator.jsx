@@ -29,6 +29,7 @@ const Box = styled.div`
 `;
 
 const evalFunc = function(string) {
+  string =  string.replace("×", "*");
   // eslint-disable-next-line no-new-func
   return new Function("return (" + string + ")")();
 };
@@ -58,10 +59,16 @@ class Calculator extends React.Component {
       "√": () => {},
       // TODO: 사칙연산 구현
       "÷": () => {},
-      "×": () => {},
-      "-": () => {if (lastChar !== "" && !operatorKeys.includes(lastChar)) {
-        this.setState({ displayValue: displayValue + "-" });
-      }},
+      "×": () => {
+        if (lastChar !== "" && !operatorKeys.includes(lastChar)) {
+          this.setState({ displayValue: displayValue + "×" });
+        }
+      },
+      "-": () => {
+        if (lastChar !== "" && !operatorKeys.includes(lastChar)) {
+         this.setState({ displayValue: displayValue + "-" });
+        }
+      },
       "+": () => {
         // + 연산 참고하여 연산 구현
         if (lastChar !== "" && !operatorKeys.includes(lastChar)) {
