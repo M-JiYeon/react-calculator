@@ -2,6 +2,7 @@ import * as React from "react";
 import styled from "styled-components";
 
 import Panel from "./Panel";
+import History from "./History";
 import Display from "./Display";
 import ButtonGroup from "./ButtonGroup";
 import Button from "./Button";
@@ -36,9 +37,11 @@ const evalFunc = function(string) {
 };
 
 class Calculator extends React.Component {
+  
   // TODO: history 추가
   state = {
-    displayValue: ""
+    displayValue: "",
+    history: [], // history 배열 생성
   };
 
   onClickButton = key => {
@@ -64,6 +67,9 @@ class Calculator extends React.Component {
           displayValue = Math.sqrt(evalFunc(displayValue));
         }
         this.setState({ displayValue });
+        this.setState({ // history 배열에 저장. id는 루트를 포함한 식, value는 결과 값.
+          history: this.state.history.concat({ id: '√('+this.state.displayValue+')', value: displayValue })
+        })
       },
       // TODO: 사칙연산 구현
       "÷": () => {
@@ -88,12 +94,17 @@ class Calculator extends React.Component {
         }
       },
       "=": () => {
+        
         if (lastChar !== "" && operatorKeys.includes(lastChar)) {
           displayValue = displayValue.substr(0, displayValue.length - 1);
         } else if (lastChar !== "") {
           displayValue = evalFunc(displayValue);
-        }
+        }  
         this.setState({ displayValue });
+        this.setState({ // history 배열에 저장. id는 식, value는 결과 값.
+          history: this.state.history.concat({ id: this.state.displayValue, value: displayValue })
+        })
+       
       },
       ".": () => {
         if (lastChar !== "" && !operatorKeys.includes(lastChar)) {
@@ -117,6 +128,15 @@ class Calculator extends React.Component {
   };
 
   render() {
+    // history에 있는 식과 결과 값 추출
+    const hilist = this.state.history.map(id=> { 
+    return(
+      <Box> 
+        <div>{ id.id }</div>
+        <div>{"=" + id.value}</div>
+      </Box>
+    )
+    }) 
     return (
       <Container>
         <Panel>
@@ -164,7 +184,11 @@ class Calculator extends React.Component {
           </ButtonGroup>
         </Panel>
         {/* TODO: History componet를 이용해 map 함수와 Box styled div를 이용해 history 표시 */}
-
+        <History >
+         
+            <div>{hilist}</div>
+            
+        </History>
       </Container>
     );
   }
