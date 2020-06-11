@@ -29,9 +29,9 @@ const Box = styled.div`
   }
 `;
 
-const evalFunc = function(string) {
-  string =  string.replace(/×/gi, "*"); // 식에 있는 모든 ×를 *로 변환
-  string =  string.replace(/÷/gi, "/"); // 식에 있는 모든 ÷를 /로 변환
+const evalFunc = function (string) {
+  string = string.replace(/×/gi, "*"); // 식에 있는 모든 ×를 *로 변환
+  string = string.replace(/÷/gi, "/"); // 식에 있는 모든 ÷를 /로 변환
   // eslint-disable-next-line no-new-func
   return new Function("return (" + string + ")")();
 };
@@ -66,9 +66,12 @@ class Calculator extends React.Component {
           displayValue = Math.sqrt(evalFunc(displayValue));
         }
         this.setState({ displayValue });
-        this.setState({ // history 배열에 저장. id는 루트를 포함한 식, value는 결과 값.
-          history: this.state.history.concat({ id: '√('+this.state.displayValue+')', value: displayValue })
-        })
+        this.setState({ displayValue });
+        const newList = [// history 배열에 저장. id는 식, value는 결과 값.
+          { id: '√(' + this.state.displayValue + ')', value: displayValue },
+          ...this.state.history,
+        ];
+        this.setState({ history: newList });
       },
       // TODO: 사칙연산 구현
       "÷": () => {
@@ -83,7 +86,7 @@ class Calculator extends React.Component {
       },
       "-": () => {
         if (lastChar !== "" && !operatorKeys.includes(lastChar)) {
-         this.setState({ displayValue: displayValue + "-" });
+          this.setState({ displayValue: displayValue + "-" });
         }
       },
       "+": () => {
@@ -97,16 +100,18 @@ class Calculator extends React.Component {
           displayValue = displayValue.substr(0, displayValue.length - 1);
         } else if (lastChar !== "") {
           displayValue = evalFunc(displayValue);
-        }  
+        }
         this.setState({ displayValue });
-        this.setState({ // history 배열에 저장. id는 식, value는 결과 값.
-          history: this.state.history.concat({ id: this.state.displayValue, value: displayValue })
-        })
-       
+        const newList = [ //  식, 결과 값, 이전 식을 저장하는 새로운 배열 생성(id는 식, value는 결과 값)
+          { id: this.state.displayValue, value: displayValue },
+          ...this.state.history,
+        ];
+        this.setState({ history: newList }); // history 배열에 저장.
+
       },
       ".": () => {
         if (this.state.displayValue.indexOf(".") === -1) { // .이 있는지 확인
-          this.setState({displayValue: this.state.displayValue + "."}); // 없으면 .추가
+          this.setState({ displayValue: this.state.displayValue + "." }); // 없으면 .추가
         }
       },
       "0": () => {
@@ -126,15 +131,6 @@ class Calculator extends React.Component {
   };
 
   render() {
-    // history에 있는 식과 결과 값 추출
-    const hilist = this.state.history.map((id,index)=> { 
-    return(
-      <Box key={id} > 
-        <div>{ id.id }</div>
-        <div>{"=" + id.value}</div>
-      </Box>
-    )
-    }) 
     return (
       <Container>
         <Panel>
@@ -183,9 +179,12 @@ class Calculator extends React.Component {
         </Panel>
         {/* TODO: History componet를 이용해 map 함수와 Box styled div를 이용해 history 표시 */}
         <History >
-         
-            <div>{hilist}</div>
-            
+          {this.state.history.map((id, index) => (
+            <Box key={id} >
+              <div>{id.id}</div>
+              <div>{"=" + id.value}</div>
+            </Box>
+          ))}
         </History>
       </Container>
     );
