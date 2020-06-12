@@ -32,6 +32,10 @@ const Box = styled.div`
 const evalFunc = function (string) {
   string = string.replace(/×/gi, "*"); // 식에 있는 모든 ×를 *로 변환
   string = string.replace(/÷/gi, "/"); // 식에 있는 모든 ÷를 /로 변환
+  if(string.substring(0,1) == '√'){ // 히스토리에 '√'가 있으면
+    string = string.substring(1,string.length); // '√' 제거
+    string = Math.sqrt(evalFunc(string)); // 새로 제곱근 계산해서 저장
+  }
   // eslint-disable-next-line no-new-func
   return new Function("return (" + string + ")")();
 };
@@ -130,10 +134,10 @@ class Calculator extends React.Component {
     }
   };
 
-  handleClick = (i) => {
+  handleClick = (i) => { // 히스토리 클릭시 발생하는 이벤트
     {
-      this.state.displayValue = i.id;
-      this.setState({ displayValue: i.id })
+      this.state.displayValue = i.id; // 식 추출
+      this.setState({ displayValue: i.id }) // 디스플레이에 식 출력
     }
   };
 
