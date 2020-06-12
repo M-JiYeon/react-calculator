@@ -65,13 +65,9 @@ class Calculator extends React.Component {
         } else if (lastChar !== "") {
           displayValue = Math.sqrt(evalFunc(displayValue));
         }
+        // 새로운 배열을 생성해 history에 집어넣는 것이 아닌 배열에 앞에 값 추가 
+        this.state.history.unshift({ id: '√(' + this.state.displayValue + ')', value: displayValue });
         this.setState({ displayValue });
-        this.setState({ displayValue });
-        const newList = [// history 배열에 저장. id는 식, value는 결과 값.
-          { id: '√(' + this.state.displayValue + ')', value: displayValue },
-          ...this.state.history,
-        ];
-        this.setState({ history: newList });
       },
       // TODO: 사칙연산 구현
       "÷": () => {
@@ -101,12 +97,16 @@ class Calculator extends React.Component {
         } else if (lastChar !== "") {
           displayValue = evalFunc(displayValue);
         }
-        this.setState({ displayValue });
-        const newList = [ //  식, 결과 값, 이전 식을 저장하는 새로운 배열 생성(id는 식, value는 결과 값)
+        /*const newList = [ //  식, 결과 값, 이전 식을 저장하는 새로운 배열 생성(id는 식, value는 결과 값)
           { id: this.state.displayValue, value: displayValue },
           ...this.state.history,
         ];
         this.setState({ history: newList }); // history 배열에 저장.
+        */
+       // 새로운 배열을 생성해 history에 집어넣는 것이 아닌 배열에 앞에 값 추가 
+        this.state.history.unshift({ id: this.state.displayValue, value: displayValue });
+        this.setState({ displayValue });
+
 
       },
       ".": () => {
@@ -127,6 +127,13 @@ class Calculator extends React.Component {
     } else {
       // 여긴 숫자
       this.setState({ displayValue: displayValue + key });
+    }
+  };
+
+  handleClick = (i) => {
+    {
+      this.state.displayValue = i.id;
+      this.setState({ displayValue: i.id })
     }
   };
 
@@ -179,12 +186,12 @@ class Calculator extends React.Component {
         </Panel>
         {/* TODO: History componet를 이용해 map 함수와 Box styled div를 이용해 history 표시 */}
         <History >
-          {this.state.history.map((id, index) => (
-            <Box key={id} >
-              <div>{id.id}</div>
-              <div>{"=" + id.value}</div>
+          {this.state.history.map((i) => {
+            return <Box onClick={() => { this.handleClick(i) }}>
+              <h3>{i.id}</h3>
+              <h3>= {i.value}</h3>
             </Box>
-          ))}
+          })}
         </History>
       </Container>
     );

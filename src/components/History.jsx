@@ -20,8 +20,9 @@ const Container = styled.div`
 
 // TODO: Panel 을 참고해서 History component 생성 및 export
 class History extends React.Component {
-  render() {
-    return <Container>{this.props.children}</Container>;
+  render() { 
+    // test를 진행하면서 history를 구현했는데 계속 오류가 났다. 이유를 살펴보니 return을 안해주었다.
+    return <Container data-testid="history">{this.props.children}</Container>;
   }
 }
 
